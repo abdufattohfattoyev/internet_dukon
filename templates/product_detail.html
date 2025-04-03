@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} {{ product.title }} {% endblock title %}
+
+{% block content %}
+    <!-- Breadcrumb Section -->
+    <div class="py-4 bg-gradient-primary text-white shadow-lg position-relative overflow-hidden" data-aos="fade-down" data-aos-duration="1000">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none fw-semibold"><i class="fas fa-home me-1"></i> Bosh sahifa</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'categories' %}" class="text-white text-decoration-none fw-semibold">Kategoriyalar</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'category_products' product.category.id %}" class="text-white text-decoration-none fw-semibold">{{ product.category.title }}</a></li>
+                    <li class="breadcrumb-item active fw-bold" aria-current="page">{{ product.title }}</li>
+                </ol>
+            </div>
+        </div>
+        <div class="gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);"></div>
+    </div>
+
+    <!-- Product Detail Section -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden product-detail-card" style="background: linear-gradient(145deg, #ffffff, #f8fafc);">
+                    <div class="card-body p-5">
+                        <div class="row align-items-center">
+                            <!-- Product Image -->
+                            <div class="col-md-5" data-aos="fade-right" data-aos-duration="1000">
+                                <div class="product-image position-relative overflow-hidden rounded-3 shadow-sm">
+                                    {% if product.cover_pic %}
+                                        <img src="{{ product.cover_pic.url }}" class="w-100 img-fluid lazyload" alt="{{ product.title }}" style="object-fit: cover; height: 400px; transition: transform 0.5s ease;" loading="lazy" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                        <div class="overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(88, 101, 242, 0.1); opacity: 0; transition: opacity 0.5s ease;"></div>
+                                    {% else %}
+                                        <div class="w-100 h-100 d-flex justify-content-center align-items-center bg-light rounded-3" style="height: 400px;">
+                                            <p class="text-muted fw-semibold">Rasm mavjud emas</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="col-md-7" data-aos="fade-left" data-aos-duration="1000">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h2 class="fw-bold mb-0" style="font-family: 'Space Grotesk', sans-serif; color: #2d3436; font-size: 2.2rem;">{{ product.title }}</h2>
+                                    {% if product.trending %}
+                                        <span class="badge bg-warning text-dark px-4 py-2 fw-bold rounded-pill shadow-sm" style="font-size: 1rem;">Aksiya</span>
+                                    {% endif %}
+                                </div>
+
+                                <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.6; font-family: 'Inter', sans-serif;">{{ product.small_description|truncatewords:20 }}</p>
+
+                                <div class="pricing mb-4">
+                                    <p class="mb-0 btn btn-primary px-5 py-3 text-white fw-bold" id="narx" style="border-radius: 30px; background: #5865f2; box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);">
+                                        Narxi: <span id="productPrice">{{ product.selling_price|stringformat:'d' }}</span> so'm
+                                    </p>
+                                    {% if product.original_price %}
+                                        <p class="mt-2"><s class="text-danger fw-bold" style="font-size: 1.2rem;">{{ product.original_price|stringformat:'d' }} so'm</s></p>
+                                    {% endif %}
+                                </div>
+
+                                <p class="text-secondary mb-2" style="font-size: 1rem;"><i class="fas fa-calendar-alt me-2"></i> Sana: <span class="fw-medium">{{ product.created_at|date:"Y-m-d" }}</span></p>
+                                <p class="text-secondary mb-4" style="font-size: 1rem;"><i class="fas fa-box me-2"></i> Mahsulot soni: <span class="fw-medium">{{ product.quantity }} dona</span></p>
+
+                                <!-- Add to Cart Form -->
+                                <form method="POST" action="{% url 'add_cart' product.id %}" class="d-flex align-items-center gap-3 mb-4">
+                                    {% csrf_token %}
+                                    <label for="quantity" class="fw-medium text-dark" style="font-size: 1.1rem;">Miqdor:</label>
+                                    <input type="number" name="product_qty" id="quantity" value="1" min="1" max="{{ product.quantity }}"
+                                           class="form-control" style="width: 100px; border-radius: 25px; padding: 10px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);">
+                                    <button type="submit" class="btn btn-primary px-5 py-3 fw-bold text-uppercase"
+                                            style="border-radius: 30px; background: #ff7979; box-shadow: 0 5px 15px rgba(255, 121, 121, 0.4);">
+                                        <i class="fas fa-cart-plus me-2"></i> Savatchaga Qo'shish
+                                    </button>
+                                </form>
+
+
+                                <!-- Admin Actions -->
+                                {% if request.user.is_superuser or request.user.is_admin %}
+                                    <div class="d-flex gap-3">
+                                        <a class="btn btn-outline-primary px-4 py-2 fw-bold" href="{% url 'update_product' product.id %}" style="border-radius: 25px;">Tahrirlash</a>
+                                        <a class="btn btn-danger px-4 py-2 fw-bold" href="#" style="border-radius: 25px;">O'chirish</a>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Description -->
+                                <hr class="my-5" style="border-color: rgba(88, 101, 242, 0.2);">
+                                <h3 class="fw-semibold mb-4" style="font-family: 'Space Grotesk', sans-serif; color: #2d3436; font-size: 1.8rem;">Mahsulot Haqida</h3>
+                                <p class="text-dark" style="font-size: 1.1rem; line-height: 1.8; font-family: 'Inter', sans-serif;">{{ product.description|default:"Ma'lumot mavjud emas" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 rounded-4 shadow-lg" style="background: transparent;">
+                <div class="modal-body p-0">
+                    <img src="{{ product.cover_pic.url }}" class="w-100 rounded-4" alt="{{ product.title }}" style="max-height: 80vh; object-fit: contain;">
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom CSS -->
+    <style>
+        /* Breadcrumb Styling */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #5865f2, #ff7979);
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-gradient-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: rotateGradient 15s infinite linear;
+        }
+        .breadcrumb-item a:hover {
+            color: #fff !important;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        /* Product Card Styling */
+        .product-detail-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-detail-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(88, 101, 242, 0.25);
+        }
+        .product-image:hover img {
+            transform: scale(1.05);
+        }
+        .product-image:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            transition: all 0.4s ease;
+        }
+        .btn-primary:hover {
+            background: #7289da;
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.6);
+            transform: scale(1.05);
+        }
+        .btn-outline-primary {
+            border-color: #5865f2;
+            color: #5865f2;
+        }
+        .btn-outline-primary:hover {
+            background: #5865f2;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+        }
+        .btn-danger {
+            background: #ff7979;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: #ff9999;
+            box-shadow: 0 5px 15px rgba(255, 121, 121, 0.6);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            background: transparent;
+            border: none;
+        }
+
+        /* Animations */
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .product-image img, .product-image div {
+                height: 300px !important;
+            }
+            .card-body {
+                padding: 2rem !important;
+            }
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+            h2 { font-size: 1.8rem; }
+            .fs-3 { font-size: 1.5rem !important; }
+        }
+    </style>
+
+    <!-- Additional Scripts -->
+    {% block scripts %}
+        {{ block.super }}
+        <script>
+            AOS.init({
+                once: true,
+                offset: 100,
+            });
+
+            // Dynamic Price Calculation
+            document.getElementById('quantity').addEventListener('input', function() {
+                const quantity = Math.max(1, Math.min(this.value, {{ product.quantity }}));
+                const price = {{ product.selling_price }};
+                const totalPrice = quantity * price;
+                document.getElementById('productPrice').textContent = totalPrice.toLocaleString();
+                this.value = quantity; // Ensure quantity stays within bounds
+            });
+        </script>
+    {% endblock scripts %}
+{% endblock content %}

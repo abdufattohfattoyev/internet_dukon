@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Product Qo'shish{% endblock title %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg border-0" style="max-width: 450px; width: 100%; border-radius: 15px;">
+        <!-- Header -->
+        <div class="card-header text-white text-center py-4"
+             style="background: linear-gradient(135deg, #28a745, #218838); border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <h3 class="mb-0 fw-bold">🛍️ Product Qo'shish</h3>
+        </div>
+
+        <!-- Form Section -->
+        <div class="card-body p-4">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <!-- Submit Button -->
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
+                        <i class="fas fa-plus-circle"></i> Qo'shish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+{% endblock content %}

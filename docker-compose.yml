@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+      - static-data:/app/staticfiles
+      - media-data:/app/media
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - app-network
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "config.wsgi:application"]
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "9090:8080"  # Tashqi port 9090, ichki port 8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static-data:/app/staticfiles
+      - media-data:/app/media
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  static-data:
+  media-data:

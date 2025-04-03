@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Bosh sahifa {% endblock title %}
+
+{% block content %}
+    <!-- Header -->
+    <header class="py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #5865f2, #ff7979);" data-aos="fade-in" data-aos-duration="1200">
+        <div class="container px-4 px-lg-5 my-5 text-center text-white">
+            <h1 class="display-3 fw-bold animate__animated animate__fadeInDown" style="font-family: 'Space Grotesk', sans-serif; text-shadow: 4px 4px 20px rgba(0, 0, 0, 0.4);">
+                Arzon va Qulay Xaridlar
+            </h1>
+            <p class="lead fw-normal text-white-75 mb-4 animate__animated animate__fadeInUp" style="font-size: 1.6rem; font-family: 'Inter', sans-serif;">
+                Barchasi bizda – sifat kafolati bilan!
+            </p>
+            <a href="#products" class="btn btn-light shadow-lg px-5 py-3 fw-bold animate__animated animate__zoomIn" style="border-radius: 50px; transition: all 0.4s ease; background: #fff; color: #5865f2;" data-aos="zoom-in" data-aos-delay="300">
+                <i class="fas fa-rocket me-2"></i> Xaridni boshlash
+            </a>
+        </div>
+        <!-- Dekorativ element -->
+        <div class="wave-bg" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; background: url('{% static "images/wave.svg" %}') repeat-x; opacity: 0.2; animation: waveMove 10s infinite linear;"></div>
+    </header>
+
+    <!-- Products Section -->
+    <section class="py-5" id="products">
+        <div class="container px-4 px-lg-5 mt-5">
+            <h2 class="text-center fw-bold mb-5" style="color: #2d3436; font-size: 2.8rem; font-family: 'Space Grotesk', sans-serif;" data-aos="fade-up" data-aos-duration="800">
+                <i class="fas fa-shopping-bag me-2"></i> Eng Yaxshi Mahsulotlar
+            </h2>
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for product in products %}
+                <div class="col" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card h-100 border-0 shadow-sm product-card position-relative">
+                        <!-- Sale Badge -->
+                        <span class="badge bg-danger position-absolute top-0 end-0 m-2 px-3 py-2 rounded-pill" style="font-size: 0.9rem; transition: transform 0.3s ease;">
+                            {{ product.tag }}
+                        </span>
+                        <!-- Product Image -->
+                        <div class="product-img-wrapper">
+                            <img class="card-img-top" src="{{ product.cover_pic.url }}" alt="{{ product.name }}" />
+                        </div>
+                        <!-- Product Details -->
+                        <div class="card-body text-center">
+                            <h5 class="fw-bolder text-primary mb-3" style="font-family: 'Inter', sans-serif; font-size: 1.3rem; transition: color 0.3s ease;">{{ product.title }}</h5>
+                            <!-- Reviews -->
+                            <div class="d-flex justify-content-center small text-warning mb-2">
+                                {% for i in "12345" %}
+                                <i class="fas fa-star" style="font-size: 1rem;"></i>
+                                {% endfor %}
+                            </div>
+                            <!-- Price -->
+                            <p class="text-muted text-decoration-line-through me-2" style="font-size: 1.1rem;">{{ product.original_price }} UZS</p>
+                            <p class="fw-bold text-success fs-4" style="font-family: 'Inter', sans-serif;">{{ product.selling_price }} UZS</p>
+                        </div>
+                        <!-- Product Actions -->
+                        <div class="card-footer bg-transparent border-0 text-center py-3 d-flex justify-content-center gap-2">
+                            <a href="{% url 'detail_product' product.id %}" class="btn btn-outline-primary px-4 py-2 fw-bold" style="border-radius: 30px; transition: all 0.4s ease;">
+                                <i class="fas fa-info-circle me-1"></i> Batafsil
+                            </a>
+                            <a href="{% url 'add_cart' product.id %}" class="btn btn-primary px-4 py-2 fw-bold add-to-cart-btn"
+                               style="border-radius: 30px; transition: all 0.4s ease;">
+                                <i class="fas fa-cart-plus me-1"></i> Savatga qo‘shish
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom CSS -->
+    <style>
+        /* Header Animation */
+        .animate__animated {
+            animation-duration: 1.2s;
+        }
+        .wave-bg {
+            animation: waveMove 10s infinite linear;
+        }
+        @keyframes waveMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* Product Cards */
+        .product-card {
+            border-radius: 20px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            background: #fff;
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(88, 101, 242, 0.2);
+        }
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.1);
+        }
+        .product-card:hover .badge {
+            transform: scale(1.1);
+        }
+        .product-img-wrapper {
+            overflow: hidden;
+            height: 240px;
+            background: #f4f7fa;
+        }
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #5865f2;
+            border: none;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+        .btn-primary:hover {
+            background: #ff7979;
+            box-shadow: 0 6px 20px rgba(255, 121, 121, 0.5);
+            transform: scale(1.05);
+        }
+        .btn-outline-primary {
+            border-color: #5865f2;
+            color: #5865f2;
+        }
+        .btn-outline-primary:hover {
+            background: #5865f2;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .display-3 { font-size: 2.2rem; }
+            .lead { font-size: 1.3rem; }
+            .product-img-wrapper { height: 200px; }
+            .btn { padding: 8px 16px; }
+        }
+    </style>
+
+    <!-- Bootstrap Icons & Animate.css & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Additional Scripts -->
+    {% block scripts %}
+        {{ block.super }}
+        <script>
+            AOS.init({
+                once: true,
+                offset: 100,
+            });
+
+            // Dinamik AOS delay qo'shish
+            document.querySelectorAll('.col').forEach((element, index) => {
+                element.setAttribute('data-aos-delay', index * 200);
+            });
+        </script>
+    {% endblock scripts %}
+{% endblock content %}

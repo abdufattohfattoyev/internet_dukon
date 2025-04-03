@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Qidiruv Natijalari {% endblock title %}
+
+{% block content %}
+    <!-- Header Section -->
+    <div class="py-5 bg-gradient-primary text-white shadow-lg position-relative overflow-hidden" data-aos="fade-down" data-aos-duration="1200">
+        <div class="container text-center">
+            <h3 class="fw-bold display-5" style="font-family: 'Space Grotesk', sans-serif; text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.4); letter-spacing: 1px;">
+                Qidiruv Natijalari
+            </h3>
+            <p class="lead text-white-75" style="font-family: 'Inter', sans-serif; font-size: 1.5rem;">
+                Topilgan mahsulotlar: <span class="badge bg-light text-dark rounded-pill px-3 py-1">{{ products|length }}</span>
+            </p>
+        </div>
+        <div class="gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%); animation: pulseGradient 10s infinite;"></div>
+    </div>
+
+    <!-- Search Results Section -->
+    <div class="container my-5">
+        {% if products %}
+            <div class="row g-4">
+                {% for product in products %}
+                    <div class="col-md-4 col-sm-6 product-item" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="card border-0 shadow-lg rounded-4 overflow-hidden product-card position-relative" style="background: linear-gradient(145deg, #ffffff, #f8fafc);">
+                            <!-- Product Image -->
+                            <div class="product-img-wrapper position-relative">
+                                <img src="{{ product.cover_pic.url }}" class="card-img-top" alt="{{ product.title }}" style="height: 260px; object-fit: cover; transition: transform 0.6s ease, filter 0.3s ease;">
+                                <div class="overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(88, 101, 242, 0.1), rgba(255, 121, 121, 0.5)); opacity: 0; transition: opacity 0.5s ease;"></div>
+                                <!-- Badge -->
+                                <span class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.9rem; transition: transform 0.3s ease;">
+                                    Yangi
+                                </span>
+                            </div>
+                            <!-- Product Details -->
+                            <div class="card-body text-center py-4">
+                                <h5 class="card-title fw-bold text-dark mb-3" style="font-family: 'Inter', sans-serif; font-size: 1.4rem; transition: color 0.3s ease;">{{ product.title }}</h5>
+                                <p class="card-text text-muted" style="font-size: 1rem; line-height: 1.6; font-family: 'Inter', sans-serif;">{{ product.description|truncatewords:12 }}</p>
+                                <p class="fw-bold text-success fs-3" style="font-family: 'Space Grotesk', sans-serif; text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);">{{ product.selling_price|stringformat:'d' }} so'm</p>
+                            </div>
+                            <!-- Product Actions -->
+                            <div class="card-footer bg-transparent border-0 text-center py-4 d-flex justify-content-center gap-3">
+                                <a href="{% url 'detail_product' product.id %}" class="btn btn-outline-primary px-4 py-2 fw-bold" style="border-radius: 30px; transition: all 0.4s ease;">
+                                    <i class="fas fa-info-circle me-2"></i> Batafsil
+                                </a>
+                                <button class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 30px; transition: all 0.4s ease;">
+                                    <i class="fas fa-cart-plus me-2"></i> Savatga
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5" data-aos="fade-in" data-aos-duration="1000">
+                <div class="card border-0 shadow-sm rounded-4 p-5 mx-auto" style="max-width: 500px; background: #fff;">
+                    <i class="fas fa-search-minus text-muted mb-3" style="font-size: 3rem; opacity: 0.7;"></i>
+                    <p class="text-muted fw-semibold" style="font-size: 1.6rem; font-family: 'Inter', sans-serif;">
+                        Hech qanday mahsulot topilmadi
+                    </p>
+                    <a href="{% url 'home' %}" class="btn btn-primary px-4 py-2 fw-bold mt-3" style="border-radius: 30px;">
+                        <i class="fas fa-arrow-left me-2"></i> Bosh sahifaga qaytish
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Custom CSS -->
+    <style>
+        /* Header */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #5865f2, #ff7979);
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-gradient-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: pulseGradient 10s infinite ease-in-out;
+        }
+        @keyframes pulseGradient {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Product Cards */
+        .product-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-radius: 25px;
+            overflow: hidden;
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+        }
+        .product-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(88, 101, 242, 0.25);
+        }
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.15);
+            filter: brightness(1.05);
+        }
+        .product-card:hover .overlay {
+            opacity: 1;
+        }
+        .product-card:hover .card-title {
+            color: #5865f2;
+        }
+        .product-card:hover .badge {
+            transform: scale(1.1);
+        }
+        .product-img-wrapper {
+            overflow: hidden;
+            height: 260px;
+            background: #f4f7fa;
+            position: relative;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #5865f2;
+            border: none;
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+            transition: all 0.4s ease;
+        }
+        .btn-primary:hover {
+            background: #ff7979;
+            box-shadow: 0 8px 20px rgba(255, 121, 121, 0.6);
+            transform: scale(1.08);
+        }
+        .btn-outline-primary {
+            border-color: #5865f2;
+            color: #5865f2;
+            transition: all 0.4s ease;
+        }
+        .btn-outline-primary:hover {
+            background: #5865f2;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+            transform: scale(1.08);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .display-5 { font-size: 2rem; }
+            .lead { font-size: 1.2rem; }
+            .product-img-wrapper { height: 220px; }
+            .card-title { font-size: 1.2rem; }
+            .fs-3 { font-size: 1.6rem !important; }
+        }
+    </style>
+
+    <!-- Additional Scripts -->
+    {% block scripts %}
+        {{ block.super }}
+        <script>
+            AOS.init({
+                once: true,
+                offset: 120,
+            });
+
+            // Dinamik AOS delay qo'shish
+            document.querySelectorAll('.product-item').forEach((element, index) => {
+                element.setAttribute('data-aos-delay', index * 200);
+            });
+        </script>
+    {% endblock scripts %}
+{% endblock content %}
